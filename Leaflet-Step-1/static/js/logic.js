@@ -16,6 +16,8 @@ var myMap = L.map("mapid", {
   
   // Store API query variables
   var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
+  var depthInfo = []
   
   // Grab the data with d3
   d3.json(url, function(response) {
@@ -28,6 +30,9 @@ var myMap = L.map("mapid", {
       var long = response.features[i].geometry.coordinates[0]
       var depth = response.features[i].geometry.coordinates[2]
       var size = response.features[i].properties.mag
+      var loc = response.features[i].properties.place
+
+      depthInfo.push(Number(depth))
   
       // Check for location property
       if (lat && long && depth && size) {
@@ -35,12 +40,12 @@ var myMap = L.map("mapid", {
         var color = "#fff"
         // create marker
         L.circle(location, {
-        fillOpacity: 0.75,
+        fillOpacity: 0.5,
         color: "white",
         fillColor: color,
         // Adjust radius
-        radius: 12000
-        }).bindPopup("popup").addTo(myMap); //WRITE APPROPRIATE POPUP MESSAGE (MAGNITUDE, LOCATION, DEPTH), ADD ONCLICK 
+        radius: size*24000
+        }).bindPopup("<h1>" + loc + "</h1> <hr> <h3>Magnitude: " + size + "</h3> <hr> <h3>Depth: " + depth + "</h3>").addTo(myMap);  
         // WRITE IF/ELSE STATEMENTS TO CHANGE MARKER COLOR/SIZE BASED ON PARAMETERS
     }
 }
@@ -48,6 +53,7 @@ var myMap = L.map("mapid", {
       }
     
   );
+  console.log(depthInfo);
 
   // TDL: ADD LEGEND
   // BONUS: ADD TECTONIC PLATES DATASET
