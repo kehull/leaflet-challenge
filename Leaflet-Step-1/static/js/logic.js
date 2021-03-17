@@ -18,6 +18,21 @@ L.tileLayer(
   }
 ).addTo(myMap);
 
+// legend
+var legend = L.control();
+
+legend.onAdd = function(map) {
+  var div = L.DomUtil.create("div", "legend");
+  div.innerHTML += "<h4>Earthquake Depths:</h4>";
+  div.innerHTML += '<i style="background: #477AC2"></i><span>Shallow</span><br><br>';
+  div.innerHTML += '<i style="background: #448D40"></i><span>Mid-Focus</span><br><br>';
+  div.innerHTML += '<i style="background: #DE4C1F"></i><span>Deep focus</span><br>';
+
+  return div;
+};
+
+legend.addTo(myMap);
+
 // Store API query variables
 var url =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
@@ -41,17 +56,29 @@ function handleData(response) {
 
     depthInfo.push(Number(depth));
 
+    if (depth < 17) {
+      var color = "#477AC2";
+      console.log("shallow")
+    }
+    else if (depth <= 33 && depth > 17) {
+      var color = "#448D40"
+      console.log("mid-focus")
+    }
+    else if (depth > 33) {
+      var color = "#DE4C1F"
+      console.log("deep-focus")
+    }
     // Check for location property
     if (lat && long && depth && size) {
       var location = [lat, long];
-      var color = "#fff";
+      // var color = "";
       // create marker
       L.circle(location, {
-        fillOpacity: 0.5,
-        color: "white",
+        fillOpacity: 0.75,
+        color: color,
         fillColor: color,
         // Adjust radius
-        radius: size * 24000,
+        radius: size * 12000,
       })
         .bindPopup(
           "<h1>" +
@@ -63,7 +90,6 @@ function handleData(response) {
             "</h3>"
         )
         .addTo(myMap);
-      // WRITE IF/ELSE STATEMENTS TO CHANGE MARKER COLOR/SIZE BASED ON PARAMETERS
     }
   }
 }
